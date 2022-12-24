@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 import streamlit as st
+import numpy as np
 
 """
 Pull data of availability between date1 and date2 for one calendly
