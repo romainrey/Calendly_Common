@@ -8,7 +8,7 @@ import numpy as np
 Pull data of availability between date1 and date2 for one calendly
 The link of the request needs to be found in the request the browser makes to the calendly
 """
-def get_request(link, date1, date2):
+def get_request(link, date1, date2, timezone):
     headers = {
         'authority': 'calendly.com',
         'accept': 'application/json, text/plain, */*',
@@ -28,7 +28,7 @@ def get_request(link, date1, date2):
     }
 
     params = {
-        'timezone': 'America/New_York',
+        'timezone': timezone,
         'diagnostics': 'false',
         'range_start': date1,
         'range_end': date2,
@@ -65,22 +65,22 @@ def get_spots(response, name):
 """
 Return calendar data into dataframe
 """
-def get_calendar(link, name, date1, date2):
-    response = get_request(link, date1, date2)
+def get_calendar(link, name, date1, date2, timezone):
+    response = get_request(link, date1, date2, timezone)
     df = get_spots(response, name)
     return(df)
 
 """
 Pulls our 3 calendars and give a dataframe of the common times
 """
-def get_all_calendars(date1, date2):
+def get_all_calendars(date1, date2, timezone):
     link_romain = 'https://calendly.com/api/booking/event_types/CGC3VNJAQJDMOMAA/calendar/range'
     link_clovis = 'https://calendly.com/api/booking/event_types/203ad347-f3e7-456e-9e43-95bad33d1eba/calendar/range'
     link_fernando = 'https://calendly.com/api/booking/event_types/64be395f-d4d3-4d05-8b93-770e307e9c3d/calendar/range'
 
-    rom = get_calendar(link_romain, 'Romain', date1, date2)
-    clo = get_calendar(link_clovis, 'Clovis', date1, date2)
-    fer = get_calendar(link_fernando, 'Fernando', date1, date2)
+    rom = get_calendar(link_romain, 'Romain', date1, date2, timezone)
+    clo = get_calendar(link_clovis, 'Clovis', date1, date2, timezone)
+    fer = get_calendar(link_fernando, 'Fernando', date1, date2, timezone)
 
     commonTimes = set(rom['Romain']) & set(clo['Clovis']) & set(fer['Fernando'])
     df = pd.DataFrame(commonTimes).rename({0:'Times'}, axis = 1)
