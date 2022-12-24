@@ -13,4 +13,4 @@ min_value=datetime.date.today(), max_value = datetime.date.today()+datetime.time
 df = get_all_calendars(dates[0], dates[1]).copy(deep = True)
 pdf = get_styled_pivot_calendar(df)
 
-st.table(pdf.style.applymap(greend1s))
+st.table(pdf)

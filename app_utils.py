@@ -135,5 +135,5 @@ def get_styled_pivot_calendar(df):
     df2.Free = df2.Free.astype('int')
     # Recasting time into readable format 00h00
     df2.HourF = df2.HourF.apply(lambda x: str(int(x)).zfill(2)+'h'+str(int(3/5 * 100*(x-int(x)))).zfill(2))
-    pdf = pd.pivot_table(df2, index = 'HourF', columns = 'Day', values = 'Free')
+    pdf = pd.pivot_table(df2, index = 'HourF', columns = 'Day', values = 'Free').style.applymap(greend1s)
     return(pdf)
