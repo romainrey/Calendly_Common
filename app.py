@@ -8,8 +8,12 @@ import datetime
 from streamlit_javascript import st_javascript
 
 st.title('Calendar C-F-R')
+min_date, max_date = datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 13)
 dates = st.date_input(label = 'Date Range', value = [datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 7)],
-min_value=datetime.date.today(), max_value = datetime.date.today()+datetime.timedelta(days = 13))
+min_value=min_date, max_value = max_date)
+dates[0] = min(dates[0], max_date-datetime.timedelta(days = 1))
+dates[1] = max(dates[1], dates[0]+datetime.timedelta(days = 1))
+
 timezone = st_javascript("""await (async () => {
             const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             console.log(userTimezone)
