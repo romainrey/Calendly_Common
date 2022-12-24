@@ -10,19 +10,20 @@ from streamlit_javascript import st_javascript
 st.title('Calendar C-F-R')
 min_date, max_date = datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 13)
 dates = st.date_input(label = 'Date Range', value = [datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 7)],
-min_value=min_date, max_value = max_date)
-d0 = min(dates[0], max_date-datetime.timedelta(days = 1))
-d1 = max(dates[1], d0+datetime.timedelta(days = 1))
-dates = (d0, d1)
+if len(dates)==2:
+    min_value=min_date, max_value = max_date)
+    d0 = min(dates[0], max_date-datetime.timedelta(days = 1))
+    d1 = max(dates[1], d0+datetime.timedelta(days = 1))
+    dates = (d0, d1)
 
-timezone = st_javascript("""await (async () => {
-            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log(userTimezone)
-            return userTimezone
-})().then(returnValue => returnValue)""")
+    timezone = st_javascript("""await (async () => {
+                const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                console.log(userTimezone)
+                return userTimezone
+    })().then(returnValue => returnValue)""")
 
-df = get_all_calendars(dates[0], dates[1], timezone).copy(deep = True)
-pdf = get_styled_pivot_calendar(df)
+    df = get_all_calendars(dates[0], dates[1], timezone).copy(deep = True)
+    pdf = get_styled_pivot_calendar(df)
 
-st.text("Showing for timezone: "+timezone)
-st.table(pdf)
+    st.text("Showing for timezone: "+timezone)
+    st.table(pdf)
