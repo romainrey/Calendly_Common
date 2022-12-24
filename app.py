@@ -9,7 +9,7 @@ from streamlit_javascript import st_javascript
 
 st.title('Calendar C-F-R')
 min_date, max_date = datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 13)
-dates = st.date_input(label = 'Date Range', value = [datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 7)],
+dates = st.date_input(label = 'Date Range', value = (datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 7)),
 min_value=min_date, max_value = max_date)
 if len(dates)==2:
     d0 = min(dates[0], max_date-datetime.timedelta(days = 1))
