@@ -3,6 +3,10 @@ import json
 import pandas as pd
 import streamlit as st
 
+"""
+Pull data of availability between date1 and date2 for one calendly
+The link of the request needs to be found in the request the browser makes to the calendly
+"""
 def get_request(link, date1, date2):
     headers = {
         'authority': 'calendly.com',
@@ -36,6 +40,9 @@ def get_request(link, date1, date2):
     )
     return(response)
 
+"""
+Cast the data into a dataframe
+"""
 def get_spots(response, name):
     days = json.loads(response.text)['days']
     dfs = []
@@ -54,11 +61,17 @@ def get_spots(response, name):
     df[name] = pd.to_datetime(df[name])
     return(df)
 
+"""
+Return calendar data into dataframe
+"""
 def get_calendar(link, name, date1, date2):
     response = get_request(link, date1, date2)
     df = get_spots(response, name)
     return(df)
 
+"""
+Pulls our 3 calendars and give a dataframe of the common times
+"""
 def get_all_calendars(date1, date2):
     link_romain = 'https://calendly.com/api/booking/event_types/CGC3VNJAQJDMOMAA/calendar/range'
     link_clovis = 'https://calendly.com/api/booking/event_types/203ad347-f3e7-456e-9e43-95bad33d1eba/calendar/range'
@@ -74,9 +87,11 @@ def get_all_calendars(date1, date2):
     df['Hour'] = df.Times.dt.hour
     df['Minute'] = df.Times.dt.minute
     df = df.sort_values('Times')
-
     return(df)
 
+"""
+Find times where continuous period of common time is available
+"""
 def find_continuous_set(df, n_continuous_30mn_slots):
     n_continuous_30mn_slots = 2
     sets = set()
@@ -100,3 +115,24 @@ def find_continuous_set(df, n_continuous_30mn_slots):
     df['Minute'] = df.Times.dt.minute
     df = df.sort_values('Times')
     return(df)
+
+"""
+Return the calendar in a pivot form with days as columns and times as rows
+"""
+def get_styled_pivot_calendar(df):
+    # Putting time into float
+    df['HourF'] = df['Hour']+0.5*(df['Minute'] == 30)
+    def greend1s(val):
+        return 'background-color: green' if val==1 else 'background-color: white'
+    # Adding all the missing rows to the df so the pivot is complete
+    hours = np.arange(df.HourF.min(), df.HourF.max(), 0.5)
+    days = df.Day.drop_duplicates()
+    all_dates = pd.concat([pd.DataFrame({'Day':i, 'HourF':hours}) for i in days])
+    df['Free'] = 1
+    df2 = pd.merge(all_dates, df, on = ['Day', 'HourF'], how = 'left')
+    df2.Free.fillna(0, inplace=True)
+    df2.Free = df2.Free.astype('int')
+    # Recasting time into readable format 00h00
+    df2.HourF = df2.HourF.apply(lambda x: str(int(x)).zfill(2)+'h'+str(int(3/5 * 100*(x-int(x)))).zfill(2))
+    pdf = pd.pivot_table(df2, index = 'HourF', columns = 'Day', values = 'Free')
+    return(pdf)
