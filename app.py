@@ -11,8 +11,9 @@ st.title('Calendar C-F-R')
 min_date, max_date = datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 13)
 dates = st.date_input(label = 'Date Range', value = [datetime.date.today(), datetime.date.today()+datetime.timedelta(days = 7)],
 min_value=min_date, max_value = max_date)
-dates[0] = min(dates[0], max_date-datetime.timedelta(days = 1))
-dates[1] = max(dates[1], dates[0]+datetime.timedelta(days = 1))
+d0 = min(dates[0], max_date-datetime.timedelta(days = 1))
+d1 = max(dates[1], d0+datetime.timedelta(days = 1))
+dates = (d0, d1)
 
 timezone = st_javascript("""await (async () => {
             const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
